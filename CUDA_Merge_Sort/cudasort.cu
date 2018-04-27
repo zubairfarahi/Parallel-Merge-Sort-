@@ -38,7 +38,6 @@ __global__ void mergesort(float* source, float* dest, long size, long width, lon
 		        }
 			k++;
 		}
-
 	        start =start+width;
 		count++;
 	}
@@ -58,11 +57,11 @@ int cuda_sort(int number_of_elements, float *a)
         }
 */
 //	int ret=(number_of_elements / 2)%512;
-	thread_units.x = THREADS;
+	thread_units.x = 1;
 	thread_units.y = 1;
 	thread_units.z = 1;
 
-	block_units.x = THREADS/2;//(ret==0)?number_of_elements/2:number_of_elements/2+512-ret;
+	block_units.x = number_of_elements/2;
 	block_units.y = 1;
 	block_units.z = 1;
 
@@ -79,7 +78,7 @@ int cuda_sort(int number_of_elements, float *a)
 	cudaMemcpy(in,a, number_of_elements*sizeof(float), cudaMemcpyHostToDevice);
 	cudaMemcpy(threads, &thread_units, sizeof(dim3), cudaMemcpyHostToDevice);
 	cudaMemcpy(blocks, &block_units, sizeof(dim3), cudaMemcpyHostToDevice);
-	long nThreads = THREADS*(THREADS/2);
+	long nThreads = number_of_elements/2;
 	float *data1 = in,*data2 = out;
 
 	for (int i = 2; i < (number_of_elements << 1); i <<= 1) 
